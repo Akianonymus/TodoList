@@ -1,0 +1,112 @@
+import axios from "axios";
+import { Fragment, useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+
+import Form from "./component/Form";
+import Message from "./component/Message";
+import API_URL from "./utils";
+
+const cookies = new Cookies();
+
+const SignIn = ({ loggedIn }) => {
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const location = new useLocation();
+  const [msg, setMsg] = useState(location?.state?.message || "");
+
+  if (loggedIn.token !== "")
+    return (
+      <Navigate
+        to="/"
+        replace={true}
+        state={{ message: "Already Logged In" }}
+      />
+    );
+
+  const handleSubmit = (e) => {
+    setMsg("");
+    // prevent the form from refreshing the whole page
+    e.preventDefault();
+
+    if (username === "") {
+      setMsg(`Username blank`);
+      return;
+    }
+
+    if (password === "") {
+      setMsg(`Password blank`);
+      return;
+    }
+
+    const configuration = {
+      method: "post",
+      url: `${API_URL}/signin`,
+      data: {
+        username,
+        password,
+      },
+    };
+
+    const cookieOpt = {
+      path: "/",
+      secure: true,
+      sameSite: "strict",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    };
+    axios(configuration)
+      .then((result) => {
+        // set the cookie
+        cookies.set("token", result.data.token, cookieOpt);
+
+        cookies.set("user", username, cookieOpt);
+        setMsg(`Sign In was successful. Redirecting to HomePage in 2 seconds.`);
+        loggedIn.setToken(result.data.token);
+        navigate("/", {
+          replace: true,
+          state: { message: "Welcome " + username.toUpperCase() },
+        });
+      })
+      .catch((error) => {
+        const res = error.response;
+        switch (res.status) {
+          case 401:
+            setMsg("Wrong password.");
+            break;
+          case 404:
+            setMsg(
+              `Given username doesn't exist [ ${username} ]. Sign In Failed.`
+            );
+            break;
+          default:
+            setMsg("Sign In Failed");
+            console.log(error.response);
+            break;
+        }
+      });
+  };
+
+  return (
+    <Fragment>
+      <Message msg={msg} setMsg={setMsg} />
+      <Form
+        info={{
+          header: "Sign In",
+          submit: "Sign In",
+          b1: "Don't have an account ?",
+          b2: "Sign Up",
+          blink: "/signup",
+        }}
+        username={username}
+        setUsername={setUsername}
+        password={password}
+        setPassword={setPassword}
+        handleSubmit={handleSubmit}
+      />
+    </Fragment>
+  );
+};
+export default SignIn;
