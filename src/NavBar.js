@@ -27,7 +27,7 @@ const navItems = [
 const Navbar = ({ loggedIn }) => {
   return (
     <nav>
-      <ul className="backdrop-blur-lg pb-2 text-white flex flex-wrap justify-center list-none space-x-2 pl-2 ">
+      <ul className="backdrop-blur-2xl pb-2 text-white flex flex-row flex-wrap justify-center list-none space-x-2 pl-2">
         {navItems.map((e) => {
           const nav = [];
           const logged = loggedIn.token !== "";

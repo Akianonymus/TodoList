@@ -14,6 +14,7 @@ const SignUp = ({ loggedIn }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
+  const [spinner, setSpinner] = useState(false);
 
   const handleSubmit = (e) => {
     setMsg("");
@@ -43,6 +44,8 @@ const SignUp = ({ loggedIn }) => {
       maxAge: 1000 * 60 * 60 * 24 * 7,
     };
 
+    setMsg("Trying to Sign Up..");
+    setSpinner(true);
     axios(configuration)
       .then((result) => {
         // set the cookie
@@ -50,6 +53,7 @@ const SignUp = ({ loggedIn }) => {
         cookies.set("user", username, cookieOpt);
 
         loggedIn.setToken(result.data.token);
+        setSpinner(false);
 
         navigate("/", {
           replace: true,
@@ -60,6 +64,8 @@ const SignUp = ({ loggedIn }) => {
         });
       })
       .catch((error) => {
+        setSpinner(false);
+
         const res = error.response;
         switch (res.status) {
           case 409:
@@ -89,6 +95,7 @@ const SignUp = ({ loggedIn }) => {
         password={password}
         setPassword={setPassword}
         handleSubmit={handleSubmit}
+        spinner={spinner}
       />
     </Fragment>
   );

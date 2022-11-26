@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Header from "./Header";
 import Home from "./Home";
 import Navbar from "./NavBar";
@@ -27,15 +27,30 @@ function App() {
 
   if (token !== "")
     axios(configuration)
-      .then((_) => {
-        console.log("Good token");
-      })
+      .then((_) => {})
       .catch((error) => {
-        console.log("Bad token");
-        setToken("");
-        cookies.remove("token");
-        cookies.remove("user");
-        console.log(error.response);
+        switch (error.code) {
+          case "ERR_NETWORK":
+            console.log(error.message);
+            break;
+          case "ERR_BAD_REQUEST":
+            const res = error?.response;
+            switch (res.status) {
+              case 401:
+                setToken("");
+                cookies.remove("token");
+                cookies.remove("user");
+                break;
+              default:
+                console.log(error.message);
+                console.log(res.statusText);
+                break;
+            }
+            break;
+          default:
+            console.log(error);
+            break;
+        }
       });
 
   const t = { token, setToken };
@@ -45,7 +60,7 @@ function App() {
       <Navbar loggedIn={t} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/home" element={<Navigate to="/" replace={true} />} />
         <Route path="/signin" element={<SignIn loggedIn={t} />} />
         <Route path="/signup" element={<SignUp loggedIn={t} />} />
         <Route path="/logout" element={<LogOut loggedIn={t} />} />

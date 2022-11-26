@@ -17,7 +17,17 @@ const signIn = (
   />
 );
 
-const Task = async (task, success, error) => {
+const Tp = ({ currentTarget, id }) => {
+  if (currentTarget?.id !== id) return;
+  return (
+    <div className="flex flex-row -mt-[1%]">
+      <div className="mr-2">{currentTarget?.text}</div>
+      <Spinner spinner={true} classes="mt-1" />
+    </div>
+  );
+};
+
+const Task = async (task, success, error, cleanup) => {
   const url = `${API_URL}/`;
 
   const config = {
@@ -51,6 +61,7 @@ const Task = async (task, success, error) => {
     .catch((err) => {
       error(err);
     });
+  cleanup();
 };
 
 const Todos = ({ loggedIn }) => {
@@ -59,7 +70,8 @@ const Todos = ({ loggedIn }) => {
 
   const [newtask, setNewTask] = useState("");
 
-  const [edit, setEdit] = useState(false);
+  const [currentTarget, setCurrentTarget] = useState([]);
+
   const [editid, setEditid] = useState("");
   const [editContent, setEditContent] = useState("");
   const [editContentOld, setEditContentOld] = useState("");
@@ -69,6 +81,9 @@ const Todos = ({ loggedIn }) => {
 
   const task = [];
   task.New = () => {
+    if (newtask === "") return;
+    setCurrentTarget({ text: "New" });
+
     Task(
       { name: "new", token: loggedIn.token, content: newtask },
       (result) => {
@@ -86,12 +101,14 @@ const Todos = ({ loggedIn }) => {
         // loggedIn.setToken("");
         console.log(error.response);
         return signIn;
-      }
+      },
+      () => setCurrentTarget([])
     );
   };
 
   task.Edit = () => {
     if (editContent === editContentOld || editContent === "") return;
+    setCurrentTarget({ id: editid, text: "Editing" });
     Task(
       { name: "edit", token: loggedIn.token, content: editContent, id: editid },
       (result) => {
@@ -119,11 +136,16 @@ const Todos = ({ loggedIn }) => {
         console.log("Bad bad");
         // loggedIn.setToken("");
         console.log(error);
+      },
+      () => {
+        setCurrentTarget([]);
+        setEditid("");
       }
     );
   };
 
   task.Delete = (id) => {
+    setCurrentTarget({ id: id, text: "Deleting" });
     Task(
       { name: "delete", token: loggedIn.token, id: id },
       (result) => {
@@ -143,7 +165,8 @@ const Todos = ({ loggedIn }) => {
         console.log("Bad bad");
         // loggedIn.setToken("");
         console.log(error.response);
-      }
+      },
+      () => setCurrentTarget([])
     );
   };
 
@@ -155,10 +178,9 @@ const Todos = ({ loggedIn }) => {
   buttonHandle.Edit = async (e) => {
     e.preventDefault();
     const id = e.currentTarget.parentNode.getAttribute("postid");
-    setEditid(id);
     setEditContent(data.get(id)?.content || newdata.get(id)?.content);
     setEditContentOld(editContent);
-    setEdit(true);
+    setEditid(id);
   };
   buttonHandle.Delete = async (e) => {
     e.preventDefault();
@@ -170,32 +192,35 @@ const Todos = ({ loggedIn }) => {
     return Array.from(Array.from(tasks).reverse(), ([key, value]) => {
       const dateObj = new Date(value?.date);
       const date = `${dateObj.getDate()}/${dateObj.getMonth()}/${dateObj.getFullYear()}`;
-
       return (
         <div
           key={key}
-          className="max-w-lg w-3/4 m-4 backdrop-blur-lg text-center rounded-lg shadow-xl "
+          className="backdrop-blur-2xl mb-3 sm:w-[66%] lg:w-[45%] xl:w-[30%] w-[95%] text-center rounded-lg shadow-xl mx-2 "
         >
-          <div className="py-3 px-5 " postid={key}>
+          <div
+            className="py-4 px-5 flex flex-row justify-between items-start "
+            postid={key}
+          >
             <button
               type="button"
-              className="float-left text-xl hover:text-blue-400 hover:scale-[110%]"
+              className="text-xl hover:text-blue-400 hover:scale-[110%]"
               onClick={buttonHandle.Edit}
             >
               <FaEdit />
             </button>
+            <Tp currentTarget={currentTarget} id={key} />
             <button
               type="button"
-              className="float-right text-xl hover:text-blue-400 hover:scale-[110%]"
+              className="text-xl hover:text-blue-400 hover:scale-[110%]"
               onClick={buttonHandle.Delete}
             >
               <AiFillDelete />
             </button>
           </div>
-          <div className="mx-5 my-5 overflow-scroll">
-            <p className="text-base mb-4 break-all">{value.content}</p>
+          <div className="mx-5 overflow-auto max-h-[33vh]">
+            <p className="text-base mb-5 break-all ">{value.content}</p>
           </div>
-          <div className="py-3 px-6 border-t border-gray-600 text-sm">
+          <div className="py-2 border-t border-gray-600 text-sm">
             Added on {date}
           </div>
         </div>
@@ -235,7 +260,7 @@ const Todos = ({ loggedIn }) => {
           setData(dat);
         })
         .catch((error) => {
-          console.log("Bad bad");
+          console.log("Error: Cannot fetch todos " + error.message);
           // loggedIn.setToken("");
           tmpmsg = error.toJSON().message;
           return;
@@ -252,7 +277,7 @@ const Todos = ({ loggedIn }) => {
 
   const formClass = {
     parent: "flex flex-wrap justify-center text-center text-white",
-    child: "max-w-lg w-2/3 backdrop-blur-lg p-2 rounded-lg shadow-lg",
+    child: "sm:w-[66%] w-[95%] backdrop-blur-2xl p-2 rounded-lg shadow-lg",
   };
   return (
     <Fragment>
@@ -268,30 +293,40 @@ const Todos = ({ loggedIn }) => {
           </div>
         </div>
         <div className={formClass.parent}>
-          <div className={formClass.child + " mt-2"}>
-            <button
-              className="text-white hover:text-blue-400 inline-flex justify-center w-full h-full text-4xl"
-              type="submit"
-              onClick={buttonHandle.New}
-            >
-              <AiFillFileAdd />
-            </button>
+          <div className={formClass.child + " mt-1"}>
+            <div className="flex items-start justify-center w-full">
+              <Spinner
+                spinner={currentTarget.text === "New"}
+                classes="self-center mx-2"
+              />
+              <button
+                className="text-white hover:text-blue-400 inline-flex justify-center w-full h-full text-4xl"
+                type="submit"
+                onClick={buttonHandle.New}
+              >
+                <AiFillFileAdd />
+              </button>
+
+              <Spinner
+                spinner={currentTarget.text === "New"}
+                classes="self-center mx-2"
+              />
+            </div>
           </div>
         </div>
       </form>
 
-      <Message msg={msg} setMsg={setMsg} />
-      <Spinner msg={msg} spinner={spinner} />
+      <Message msg={msg} setMsg={setMsg} spinner={spinner}></Message>
 
       <EditModal
-        edit={edit}
-        setEdit={setEdit}
+        editid={editid}
+        setEditid={setEditid}
         editContent={editContent}
         setEditContent={setEditContent}
         editTask={task.Edit}
       />
 
-      <div className="pt-4 ml-10 mr-10 flex flex-wrap justify-center  text-white ">
+      <div className="pt-4 flex flex-wrap justify-center  text-white ">
         <TodoLayout tasks={newdata} />
         <TodoLayout tasks={data} />
       </div>

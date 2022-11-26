@@ -17,6 +17,7 @@ const SignIn = ({ loggedIn }) => {
 
   const location = new useLocation();
   const [msg, setMsg] = useState(location?.state?.message || "");
+  const [spinner, setSpinner] = useState(false);
 
   if (loggedIn.token !== "")
     return (
@@ -57,20 +58,28 @@ const SignIn = ({ loggedIn }) => {
       sameSite: "strict",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     };
+
+    setMsg("Trying to sign in..");
+    setSpinner(true);
     axios(configuration)
       .then((result) => {
         // set the cookie
         cookies.set("token", result.data.token, cookieOpt);
-
         cookies.set("user", username, cookieOpt);
-        setMsg(`Sign In was successful. Redirecting to HomePage in 2 seconds.`);
+
         loggedIn.setToken(result.data.token);
+
+        setMsg(`Sign In was successful. Redirecting to HomePage in 2 seconds.`);
+        setSpinner(false);
+
         navigate("/", {
           replace: true,
           state: { message: "Welcome " + username.toUpperCase() },
         });
       })
       .catch((error) => {
+        setSpinner(false);
+
         const res = error.response;
         switch (res.status) {
           case 401:
@@ -105,6 +114,7 @@ const SignIn = ({ loggedIn }) => {
         password={password}
         setPassword={setPassword}
         handleSubmit={handleSubmit}
+        spinner={spinner}
       />
     </Fragment>
   );
