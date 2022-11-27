@@ -1,9 +1,9 @@
-import { ImSpinner9 } from "react-icons/im";
+import { ImSpinner5 } from "react-icons/im";
 
 const Spinner = ({ spinner, classes }) => {
   if (!spinner) return <></>;
 
-  return <ImSpinner9 className={"animate-spin " + classes} />;
+  return <ImSpinner5 className={"animate-spin mt-1 " + classes} />;
 };
 
 export default Spinner;

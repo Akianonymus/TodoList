@@ -1,11 +1,10 @@
 import axios from "axios";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 
 import API_URL from "./utils.js";
 import Form from "./component/Form";
-import Message from "./component/Message";
 
 const cookies = new Cookies();
 
@@ -80,24 +79,23 @@ const SignUp = ({ loggedIn }) => {
   };
 
   return (
-    <Fragment>
-      <Message msg={msg} setMsg={setMsg} />
-      <Form
-        info={{
-          header: "Sign Up",
-          submit: "Sign Up",
-          b1: "Already have an account ?",
-          b2: "Sign In",
-          blink: "/signin",
-        }}
-        username={username}
-        setUsername={setUsername}
-        password={password}
-        setPassword={setPassword}
-        handleSubmit={handleSubmit}
-        spinner={spinner}
-      />
-    </Fragment>
+    <Form
+      info={{
+        header: "Sign Up",
+        submit: "Sign Up",
+        b1: "Already have an account ?",
+        b2: "Sign In",
+        blink: "/signin",
+      }}
+      msg={msg}
+      setMsg={setMsg}
+      username={username}
+      setUsername={setUsername}
+      password={password}
+      setPassword={setPassword}
+      handleSubmit={handleSubmit}
+      spinner={spinner}
+    />
   );
 };
 

@@ -1,7 +1,10 @@
 import axios from "axios";
 import { Fragment, useEffect, useState } from "react";
-import { AiFillDelete, AiFillFileAdd } from "react-icons/ai";
-import { FaEdit } from "react-icons/fa";
+import {
+  AiOutlineDelete,
+  AiOutlineEdit,
+  AiOutlineFileAdd,
+} from "react-icons/ai";
 import { Navigate } from "react-router-dom";
 
 import EditModal from "./component/EditModal";
@@ -22,7 +25,7 @@ const Tp = ({ currentTarget, id }) => {
   return (
     <div className="flex flex-row -mt-[1%]">
       <div className="mr-2">{currentTarget?.text}</div>
-      <Spinner spinner={true} classes="mt-1" />
+      <Spinner spinner={true} />
     </div>
   );
 };
@@ -195,32 +198,32 @@ const Todos = ({ loggedIn }) => {
       return (
         <div
           key={key}
-          className="backdrop-blur-2xl mb-3 sm:w-[66%] lg:w-[45%] xl:w-[30%] w-[95%] text-center rounded-lg shadow-xl mx-2 "
+          className="bg-gray-200 dark:bg-gray-800 mb-3 sm:w-[66%] lg:w-[40%] xl:w-[30%] w-[90%] text-center rounded-md shadow-md mx-2 "
         >
           <div
-            className="py-4 px-5 flex flex-row justify-between items-start "
+            className="py-3 px-3 flex flex-row justify-between items-start "
             postid={key}
           >
             <button
               type="button"
-              className="text-xl hover:text-blue-400 hover:scale-[110%]"
+              className="text-xl hover:text-blue-400 hover:scale-[115%]"
               onClick={buttonHandle.Edit}
             >
-              <FaEdit />
+              <AiOutlineEdit />
             </button>
             <Tp currentTarget={currentTarget} id={key} />
             <button
               type="button"
-              className="text-xl hover:text-blue-400 hover:scale-[110%]"
+              className="text-xl hover:text-blue-400 hover:scale-[115%]"
               onClick={buttonHandle.Delete}
             >
-              <AiFillDelete />
+              <AiOutlineDelete />
             </button>
           </div>
           <div className="mx-5 overflow-auto max-h-[33vh]">
             <p className="text-base mb-5 break-all ">{value.content}</p>
           </div>
-          <div className="py-2 border-t border-gray-600 text-sm">
+          <div className="py-2 border-t border-gray-300 dark:border-gray-600 text-sm">
             Added on {date}
           </div>
         </div>
@@ -276,42 +279,41 @@ const Todos = ({ loggedIn }) => {
   if (loggedIn?.token === "") return signIn;
 
   const formClass = {
-    parent: "flex flex-wrap justify-center text-center text-white",
-    child: "sm:w-[66%] w-[95%] backdrop-blur-2xl p-2 rounded-lg shadow-lg",
+    parent: "flex flex-wrap justify-center text-center ",
+    child:
+      "bg-gray-200 dark:bg-gray-800 sm:w-[66%] lg:w-[40%] w-[90%] p-2 rounded-md shadow-md",
   };
   return (
     <Fragment>
-      <form>
+      <form className="mb-3">
         <div className={formClass.parent}>
           <div className={formClass.child + " mt-10"}>
             <input
               type="text"
               placeholder="Add your new todo"
-              className="w-full rounded-sm text-center bg-transparent pt-4 pb-4 pr-2 border border-solid "
+              className="w-full bg-gray-200 dark:bg-gray-900 rounded-sm text-center pt-4 pb-4 pr-2 border border-solid "
               onChange={(e) => setNewTask(e.target.value)}
             />
           </div>
         </div>
         <div className={formClass.parent}>
           <div className={formClass.child + " mt-1"}>
-            <div className="flex items-start justify-center w-full">
+            <button
+              className="hover:text-blue-400 flex items-center justify-center w-full h-full text-4xl"
+              type="submit"
+              onClick={buttonHandle.New}
+            >
               <Spinner
                 spinner={currentTarget.text === "New"}
-                classes="self-center mx-2"
+                classes="mr-auto text-xl mt-0 mx-1"
               />
-              <button
-                className="text-white hover:text-blue-400 inline-flex justify-center w-full h-full text-4xl"
-                type="submit"
-                onClick={buttonHandle.New}
-              >
-                <AiFillFileAdd />
-              </button>
+              <AiOutlineFileAdd className="hover:scale-[110%]" />
 
               <Spinner
                 spinner={currentTarget.text === "New"}
-                classes="self-center mx-2"
+                classes="ml-auto text-xl mt-0 mx-1"
               />
-            </div>
+            </button>
           </div>
         </div>
       </form>
@@ -326,7 +328,7 @@ const Todos = ({ loggedIn }) => {
         editTask={task.Edit}
       />
 
-      <div className="pt-4 flex flex-wrap justify-center  text-white ">
+      <div className="pt-4 flex flex-wrap justify-center   ">
         <TodoLayout tasks={newdata} />
         <TodoLayout tasks={data} />
       </div>

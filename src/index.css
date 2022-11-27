@@ -24,14 +24,6 @@
   background-color: rgb(30 64 175);
 }
 
-html {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("bg.webp") no-repeat center center fixed;
-  background-position: center;
-  background-size: cover;
-  color: white;
-}
-
 .modalOpen {
   animation: modalOpen 300ms;
   -webkit-animation-iteration-count: 1;
