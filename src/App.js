@@ -29,7 +29,7 @@ function App() {
 
   if (token !== "")
     axios(configuration)
-      .then((_) => { })
+      .then((_) => {})
       .catch((error) => {
         switch (error.code) {
           case "ERR_NETWORK":
@@ -89,17 +89,23 @@ function App() {
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="bg-white min-h-screen text-sky-900 dark:text-sky-100 dark:bg-gray-900">
-        <div className="sticky top-0 backdrop-blur">
-          <Navbar loggedIn={t} darkMode={darkMode} setDarkMode={setDarkMode} />
+        <div className="max-w-7xl mx-auto">
+          <div className="sticky top-0 backdrop-blur">
+            <Navbar
+              loggedIn={t}
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+            />
+          </div>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Navigate to="/" replace={true} />} />
+            <Route path="/signin" element={<SignIn loggedIn={t} />} />
+            <Route path="/signup" element={<SignUp loggedIn={t} />} />
+            <Route path="/logout" element={<LogOut loggedIn={t} />} />
+            <Route path="/todos" element={<Todos loggedIn={t} />} />
+          </Routes>
         </div>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Navigate to="/" replace={true} />} />
-          <Route path="/signin" element={<SignIn loggedIn={t} />} />
-          <Route path="/signup" element={<SignUp loggedIn={t} />} />
-          <Route path="/logout" element={<LogOut loggedIn={t} />} />
-          <Route path="/todos" element={<Todos loggedIn={t} />} />
-        </Routes>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import Message from "./component/Message";
 
-const Home = function() {
+const Home = function () {
   const location = new useLocation();
   const [msg, setMsg] = useState(location?.state?.message || "");
 
