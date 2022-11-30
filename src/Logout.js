@@ -10,7 +10,7 @@ const LogOut = ({ loggedIn }) => {
 
   loggedIn.setToken("");
   return (
-    <Navigate to="/" replace={true} state={{ message: "Log Out successful" }} />
+    <Navigate to="/" replace={true} state={{ message: "Log Out Successful" }} />
   );
 };
 

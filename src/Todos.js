@@ -30,11 +30,11 @@ const Tp = ({ currentTarget, id }) => {
   );
 };
 
-const Task = async (task, success, error, cleanup) => {
+const Task = async (task, success, error, cleanup, method = "post") => {
   const url = `${API_URL}/`;
 
   const config = {
-    method: "post",
+    method: method,
     url: url,
     headers: {
       Authorization: `Bearer ${task.token}`,
@@ -52,6 +52,9 @@ const Task = async (task, success, error, cleanup) => {
       break;
     case "delete":
       config.url += "delete/" + task.id;
+      break;
+    case "deleteall":
+      config.url += "deleteall";
       break;
     default:
       break;
@@ -78,6 +81,7 @@ const Todos = ({ loggedIn }) => {
   const [editid, setEditid] = useState("");
   const [editContent, setEditContent] = useState("");
   const [editContentOld, setEditContentOld] = useState("");
+  const [deleteall, setDeleteAll] = useState("");
 
   const [msg, setMsg] = useState("");
   const [spinner, setSpinner] = useState(false);
@@ -151,8 +155,7 @@ const Todos = ({ loggedIn }) => {
     setCurrentTarget({ id: id, text: "Deleting" });
     Task(
       { name: "delete", token: loggedIn.token, id: id },
-      (result) => {
-        console.log(result.data);
+      (_) => {
         {
           const dat = new Map(data);
           dat.delete(id);
@@ -173,6 +176,24 @@ const Todos = ({ loggedIn }) => {
     );
   };
 
+  task.DeleteAll = () => {
+    setDeleteAll(true);
+    Task(
+      { name: "deleteall", token: loggedIn.token },
+      (_) => {
+        setData(new Map());
+        setNewdata(new Map());
+      },
+      (error) => {
+        console.log("Bad bad");
+        // loggedIn.setToken("");
+        console.log(error.response);
+      },
+      () => setDeleteAll(false),
+      "post"
+    );
+  };
+
   const buttonHandle = [];
   buttonHandle.New = async (e) => {
     e.preventDefault();
@@ -190,6 +211,10 @@ const Todos = ({ loggedIn }) => {
     const id = e.currentTarget.parentNode.getAttribute("postid");
     task.Delete(id);
   };
+  buttonHandle.DeleteAll = async (e) => {
+    e.preventDefault();
+    task.DeleteAll();
+  };
 
   const TodoLayout = ({ tasks }) => {
     const a = [];
@@ -206,6 +231,7 @@ const Todos = ({ loggedIn }) => {
             postid={key}
           >
             <button
+              title="Edit Todo"
               aria-label="Edit Todo"
               type="button"
               className="text-xl hover:text-blue-400 hover:scale-[115%]"
@@ -215,6 +241,7 @@ const Todos = ({ loggedIn }) => {
             </button>
             <Tp currentTarget={currentTarget} id={key} />
             <button
+              title="Delete Todo"
               aria-label="Delete Todo"
               type="button"
               className="text-xl hover:text-blue-400 hover:scale-[115%]"
@@ -300,6 +327,7 @@ const Todos = ({ loggedIn }) => {
             onChange={(e) => setNewTask(e.target.value)}
           />
           <button
+            title="Add new Todo"
             aria-label="Add Todo"
             className="bg-gray-200 dark:bg-gray-900 border border-solid border-gray-500 dark:border-gray-200 rounded-sm mr-auto ml-1.5 px-2 hover:text-blue-400 text-4xl"
             type="submit"
@@ -324,6 +352,29 @@ const Todos = ({ loggedIn }) => {
         <TodoLayout tasks={newdata} />
         <TodoLayout tasks={data} />
       </div>
+
+      {data?.size !== 0 || newdata?.size !== 0 ? (
+        <div className="sticky bottom-0 w-full backdrop-blur-[3px]">
+          <div className="flex flex-row justify-center items-center ">
+            <button
+              className="flex flex-row justify-between bg-red-500 hover:bg-red-600 text-white my-2 p-3 rounded-md shadow-md tracking-widest"
+              onClick={buttonHandle.DeleteAll}
+            >
+              <Spinner spinner={deleteall} classes="mr-5" />
+              Delete All
+              <Spinner spinner={deleteall} classes="ml-5" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="sticky bottom-0 text-center">
+          <div className="flex flex-row justify-center items-center ">
+            <div className="bg-gray-200 dark:bg-gray-800  sm:w-[66%] lg:w-[40%] w-[90%] p-5 px-10 rounded-md shadow-lg tracking-widest">
+              No Task
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

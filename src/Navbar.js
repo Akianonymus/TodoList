@@ -32,6 +32,7 @@ const Nav = ({ loggedIn, setMenu, darkMode, setDarkMode }) => {
     <>
       {loggedIn.token === "" || (
         <NavItem
+          title="Open all saved Todos"
           path="/todos"
           content="Todos"
           onClick={() => setMenu && setMenu(false)}
@@ -64,6 +65,7 @@ const Nav = ({ loggedIn, setMenu, darkMode, setDarkMode }) => {
       )}
 
       <button
+        title="Toggle Theme"
         aria-label="Toggle theme"
         className="flex items-center py-2 bg-gray-200 dark:bg-gray-700 rounded-md px-2 hover:bg-gray-300 dark:hover:bg-gray-600"
         onClick={() => setDarkMode(darkMode ? false : true)}
@@ -78,7 +80,7 @@ const Nav = ({ loggedIn, setMenu, darkMode, setDarkMode }) => {
 const Navbar = ({ loggedIn, darkMode, setDarkMode }) => {
   const [menu, setMenu] = useState(false);
   return (
-    <h1 className="flex flex-row flex-wrap items-center relative pt-4 pb-4">
+    <h1 className="flex flex-row tracking-wider flex-wrap items-center relative pt-4 pb-4">
       {/* icon with name */}
       <div className="bg-gray-200 dark:bg-gray-800 ml-5 lg:ml-8 flex flex-row items-center text-2xl rounded-md px-3 py-2">
         <NavLink to="/" className="flex flex-row items-center">
@@ -131,6 +133,7 @@ const Navbar = ({ loggedIn, darkMode, setDarkMode }) => {
 
           {/* close icon */}
           <button
+            title="Close Menu"
             aria-label="Close Menu"
             className="dark:bg-gray-700 bg-gray-300 hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-4 flex flex-col justify-center self-stretch "
             onClick={() => setMenu(false)}
