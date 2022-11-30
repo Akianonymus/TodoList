@@ -8,15 +8,16 @@ import {
   TbNotes,
   TbUserPlus,
 } from "react-icons/tb";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 const NavItem = ({ path, content, onClick, icon }) => {
-  const active = "text-blue-600 dark:text-blue-500 ";
+  const active =
+    " bg-blue-600 text-white dark:bg-blue-900 hover:bg-blue-500 dark:hover:bg-blue-700 ";
   const classes =
-    "flex items-center rounded-md px-2 py-2 bg-gray-200 dark:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-600";
+    "flex items-center rounded-md px-2 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600";
   return (
     <NavLink
-      className={({ isActive }) => (isActive ? active : "") + classes}
+      className={({ isActive }) => classes + (isActive ? active : "")}
       to={path}
       onClick={onClick}
     >
@@ -28,7 +29,7 @@ const NavItem = ({ path, content, onClick, icon }) => {
 
 const Nav = ({ loggedIn, setMenu, darkMode, setDarkMode }) => {
   return (
-    <Fragment>
+    <>
       {loggedIn.token === "" || (
         <NavItem
           path="/todos"
@@ -38,7 +39,7 @@ const Nav = ({ loggedIn, setMenu, darkMode, setDarkMode }) => {
         />
       )}
       {loggedIn.token === "" && (
-        <Fragment>
+        <>
           <NavItem
             path="/signin"
             content="Sign In"
@@ -51,7 +52,7 @@ const Nav = ({ loggedIn, setMenu, darkMode, setDarkMode }) => {
             onClick={() => setMenu && setMenu(false)}
             icon={<TbUserPlus className="mr-1" />}
           />
-        </Fragment>
+        </>
       )}
       {loggedIn.token === "" || (
         <NavItem
@@ -63,13 +64,14 @@ const Nav = ({ loggedIn, setMenu, darkMode, setDarkMode }) => {
       )}
 
       <button
-        className="flex items-center py-2 bg-gray-200 dark:bg-gray-700 rounded-md px-2 hover:text-blue-700 dark:hover:text-blue-600"
+        aria-label="Toggle theme"
+        className="flex items-center py-2 bg-gray-200 dark:bg-gray-700 rounded-md px-2 hover:bg-gray-300 dark:hover:bg-gray-600"
         onClick={() => setDarkMode(darkMode ? false : true)}
       >
         <TbMoonStars className={setMenu ? "mr-1 text-xl" : "text-2xl"} />
         {setMenu ? "Switch Theme" : null}
       </button>
-    </Fragment>
+    </>
   );
 };
 
@@ -95,6 +97,7 @@ const Navbar = ({ loggedIn, darkMode, setDarkMode }) => {
           />
         </div>
         <button
+          aria-label="Menu"
           type="button"
           onClick={() => {
             setMenu(menu ? false : true);
@@ -128,6 +131,7 @@ const Navbar = ({ loggedIn, darkMode, setDarkMode }) => {
 
           {/* close icon */}
           <button
+            aria-label="Close Menu"
             className="dark:bg-gray-700 bg-gray-300 hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-4 flex flex-col justify-center self-stretch "
             onClick={() => setMenu(false)}
           >

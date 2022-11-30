@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Cookies from "universal-cookie";
 
@@ -15,6 +15,10 @@ import API_URL from "./utils.js";
 const cookies = new Cookies();
 const cookie = cookies.get("token") || "";
 
+const redirectTo = (msg = "You need to Login First", path = "/signin") => (
+  <Navigate to={path} replace={true} state={{ message: msg }} />
+);
+
 function App() {
   const [darkMode, setDarkMode] = useState(null);
   const [token, setToken] = useState(cookie);
@@ -29,7 +33,7 @@ function App() {
 
   if (token !== "")
     axios(configuration)
-      .then((_) => {})
+      .then((_) => { })
       .catch((error) => {
         switch (error.code) {
           case "ERR_NETWORK":
@@ -55,23 +59,19 @@ function App() {
         }
       });
 
-  // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-  //
-
   // update local storage when theme changes
-  useEffect(() => {
+  useMemo(() => {
     if (darkMode !== null)
       if (darkMode)
-        // Whenever the user explicitly chooses light mode
+        // Whenever the user explicitly chooses dark mode
         localStorage.theme = "dark";
-      // Whenever the user explicitly chooses dark mode
+      // Whenever the user explicitly chooses light mode
       else localStorage.theme = "light";
   }, [darkMode]);
 
   // if theme var found in localStorage then use it
   // otherwise check prefers-color-scheme
-  useEffect(() => {
-    console.log(localStorage.theme);
+  useMemo(() => {
     if (
       localStorage.theme === "dark" ||
       ((localStorage?.theme !== "light" || !("theme" in localStorage)) &&
@@ -83,9 +83,10 @@ function App() {
       setDarkMode(false);
       localStorage.theme = "light";
     }
-  }, [setDarkMode]);
+  }, []);
 
   const t = { token, setToken };
+
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="bg-white min-h-screen text-sky-900 dark:text-sky-100 dark:bg-gray-900">
@@ -100,10 +101,28 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Navigate to="/" replace={true} />} />
-            <Route path="/signin" element={<SignIn loggedIn={t} />} />
+            <Route
+              path="/signin"
+              element={
+                token === "" ? (
+                  <SignIn loggedIn={t} />
+                ) : (
+                  redirectTo("Already Logged In", "/")
+                )
+              }
+            />
             <Route path="/signup" element={<SignUp loggedIn={t} />} />
             <Route path="/logout" element={<LogOut loggedIn={t} />} />
-            <Route path="/todos" element={<Todos loggedIn={t} />} />
+            <Route
+              path="/todos"
+              element={
+                token === "" ? (
+                  redirectTo("You need to Login First")
+                ) : (
+                  <Todos loggedIn={t} />
+                )
+              }
+            />
           </Routes>
         </div>
       </div>

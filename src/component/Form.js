@@ -15,7 +15,7 @@ const Form = ({
 }) => {
   return (
     <div className="flex flex-col flex-wrap justify-center min-h-[90vh]">
-      <Message msg={msg} setMsg={setMsg} classes="mb-2" />
+      <Message msg={msg} setMsg={setMsg} spinner={spinner} classes="mb-2" />
       <div className="bg-gray-200 dark:bg-gray-800 self-center sm:w-[66%] lg:w-[40%] w-[90%] p-4 rounded-md shadow-md">
         <h1 className="text-3xl font-semibold text-center ">{info.header}</h1>
         <form className="mt-6">

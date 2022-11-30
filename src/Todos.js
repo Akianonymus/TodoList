@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Fragment, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   AiOutlineDelete,
   AiOutlineEdit,
@@ -23,7 +23,7 @@ const signIn = (
 const Tp = ({ currentTarget, id }) => {
   if (currentTarget?.id !== id) return;
   return (
-    <div className="flex flex-row -mt-[1%]">
+    <div className="flex flex-row -mt-[1%] text-sm">
       <div className="mr-2">{currentTarget?.text}</div>
       <Spinner spinner={true} />
     </div>
@@ -192,19 +192,21 @@ const Todos = ({ loggedIn }) => {
   };
 
   const TodoLayout = ({ tasks }) => {
-    return Array.from(Array.from(tasks).reverse(), ([key, value]) => {
+    const a = [];
+    tasks.forEach((value, key) => {
       const dateObj = new Date(value?.date);
       const date = `${dateObj.getDate()}/${dateObj.getMonth()}/${dateObj.getFullYear()}`;
-      return (
+      a.push(
         <div
           key={key}
-          className="bg-gray-200 dark:bg-gray-800 mb-3 sm:w-[66%] lg:w-[40%] xl:w-[30%] w-[90%] text-center rounded-md shadow-md mx-2 "
+          className="bg-gray-200 dark:bg-gray-800 mb-3 sm:w-[66%] lg:w-[40%] xl:w-[30%] w-[90%] text-center rounded-md shadow-md mx-2 flex flex-col"
         >
           <div
             className="py-3 px-3 flex flex-row justify-between items-start "
             postid={key}
           >
             <button
+              aria-label="Edit Todo"
               type="button"
               className="text-xl hover:text-blue-400 hover:scale-[115%]"
               onClick={buttonHandle.Edit}
@@ -213,6 +215,7 @@ const Todos = ({ loggedIn }) => {
             </button>
             <Tp currentTarget={currentTarget} id={key} />
             <button
+              aria-label="Delete Todo"
               type="button"
               className="text-xl hover:text-blue-400 hover:scale-[115%]"
               onClick={buttonHandle.Delete}
@@ -220,8 +223,10 @@ const Todos = ({ loggedIn }) => {
               <AiOutlineDelete />
             </button>
           </div>
-          <div className="mx-5 overflow-auto max-h-[33vh]">
-            <p className="text-base mb-5 break-all ">{value.content}</p>
+          <div className="mx-5 overflow-auto max-h-[33vh] grow">
+            <p className="text-base mb-5 break-all whitespace-pre-line">
+              {value.content.replace("<br/>", "\n")}
+            </p>
           </div>
           <div className="py-2 border-t border-gray-300 dark:border-gray-600 text-sm">
             Added on {date}
@@ -229,9 +234,10 @@ const Todos = ({ loggedIn }) => {
         </div>
       );
     });
+    return a.reverse();
   };
 
-  useEffect(() => {
+  useMemo(() => {
     async function fetchTasks() {
       if (loggedIn?.token === "") return;
 
@@ -274,49 +280,35 @@ const Todos = ({ loggedIn }) => {
     }
 
     fetchTasks();
-  }, [loggedIn]);
+  }, [loggedIn?.token]);
 
   if (loggedIn?.token === "") return signIn;
 
-  const formClass = {
-    parent: "flex flex-wrap justify-center text-center ",
-    child:
-      "bg-gray-200 dark:bg-gray-800 sm:w-[66%] lg:w-[40%] w-[90%] p-2 rounded-md shadow-md",
-  };
   return (
-    <Fragment>
-      <form className="mb-3">
-        <div className={formClass.parent}>
-          <div className={formClass.child + " mt-10"}>
-            <input
-              type="text"
-              placeholder="Add your new todo"
-              className="w-full bg-gray-200 dark:bg-gray-900 rounded-sm text-center pt-4 pb-4 pr-2 border border-solid "
-              onChange={(e) => setNewTask(e.target.value)}
-            />
-          </div>
+    <>
+      <div className="flex flex-wrap justify-center items-center">
+        <div
+          className={
+            "flex flex-row items-stretch bg-gray-200 dark:bg-gray-800  sm:w-[66%] lg:w-[40%] w-[90%] p-1 rounded-md shadow-md mt-10"
+          }
+        >
+          <textarea
+            type="text"
+            placeholder="Add your new todo"
+            rows={2}
+            className="bg-gray-200 dark:bg-gray-900 border border-solid border-gray-500 dark:border-gray-200 w-full rounded-sm pr-2 pt-2 text-center px-2 resize-y min-h-[8vh] max-h-[33vh]"
+            onChange={(e) => setNewTask(e.target.value)}
+          />
+          <button
+            aria-label="Add Todo"
+            className="bg-gray-200 dark:bg-gray-900 border border-solid border-gray-500 dark:border-gray-200 rounded-sm mr-auto ml-1.5 px-2 hover:text-blue-400 text-4xl"
+            type="submit"
+            onClick={buttonHandle.New}
+          >
+            <AiOutlineFileAdd />
+          </button>
         </div>
-        <div className={formClass.parent}>
-          <div className={formClass.child + " mt-1"}>
-            <button
-              className="hover:text-blue-400 flex items-center justify-center w-full h-full text-4xl"
-              type="submit"
-              onClick={buttonHandle.New}
-            >
-              <Spinner
-                spinner={currentTarget.text === "New"}
-                classes="mr-auto text-xl mt-0 mx-1"
-              />
-              <AiOutlineFileAdd className="hover:scale-[110%]" />
-
-              <Spinner
-                spinner={currentTarget.text === "New"}
-                classes="ml-auto text-xl mt-0 mx-1"
-              />
-            </button>
-          </div>
-        </div>
-      </form>
+      </div>
 
       <Message msg={msg} setMsg={setMsg} spinner={spinner}></Message>
 
@@ -328,11 +320,11 @@ const Todos = ({ loggedIn }) => {
         editTask={task.Edit}
       />
 
-      <div className="pt-4 flex flex-wrap justify-center   ">
+      <div className="mt-4 flex flex-wrap justify-center ">
         <TodoLayout tasks={newdata} />
         <TodoLayout tasks={data} />
       </div>
-    </Fragment>
+    </>
   );
 };
 

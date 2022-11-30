@@ -13,7 +13,7 @@ const Message = ({ msg, setMsg, spinner, classes }) => {
       }
     >
       <Spinner spinner={spinner} />
-      <div className="flex-auto pl-2 ">{msg}</div>
+      <div className={"flex-auto " + (spinner ? "pl-2" : null)}>{msg}</div>
       <button onClick={() => setMsg("")}>
         <AiOutlineClose className="ml-2 flex-auto text-2xl" />
       </button>

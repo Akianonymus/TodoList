@@ -1,5 +1,3 @@
-import { Fragment } from "react";
-
 const EditModal = ({
   editid,
   setEditid,
@@ -10,9 +8,9 @@ const EditModal = ({
   if (editid === "") return <></>;
 
   return (
-    <Fragment>
+    <>
       <div
-        className="justify-center items-center flex backdrop-blur-[2px] absolute inset-0 z-50 outline-none focus:outline-none overflow-auto"
+        className="justify-center items-center flex backdrop-blur-[2px] fixed inset-0 z-50 outline-none focus:outline-none overflow-auto"
         style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
         onClick={() => setEditid("")}
       >
@@ -69,7 +67,7 @@ const EditModal = ({
           </div>
         </div>
       </div>
-    </Fragment>
+    </>
   );
 };
 
