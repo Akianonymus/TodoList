@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Cookies from "universal-cookie";
 
@@ -10,10 +10,9 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import LogOut from "./Logout";
 
-import API_URL from "./utils.js";
+import { API_URL, refreshAccessToken } from "./utils";
 
 const cookies = new Cookies();
-const cookie = cookies.get("token") || "";
 
 const redirectTo = (msg = "You need to Login First", path = "/signin") => (
   <Navigate to={path} replace={true} state={{ message: msg }} />
@@ -21,43 +20,59 @@ const redirectTo = (msg = "You need to Login First", path = "/signin") => (
 
 function App() {
   const [darkMode, setDarkMode] = useState(null);
-  const [token, setToken] = useState(cookie);
+  const [accessToken, setAccessToken] = useState(
+    cookies.get("access_token") || "",
+  );
+  const refreshToken = cookies.get("refresh_token") || "";
 
-  const configuration = {
-    method: "get",
-    url: `${API_URL}/auth`,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  if (token !== "")
-    axios(configuration)
-      .then((_) => { })
-      .catch((error) => {
-        switch (error.code) {
-          case "ERR_NETWORK":
-            console.log(error.message);
-            break;
-          case "ERR_BAD_REQUEST":
-            const res = error?.response;
-            switch (res.status) {
-              case 401:
-                setToken("");
-                cookies.remove("token");
-                cookies.remove("user");
-                break;
-              default:
-                console.log(error.message);
-                console.log(res.statusText);
-                break;
-            }
-            break;
-          default:
-            console.log(error);
-            break;
-        }
-      });
+  useEffect(() => {
+    const configuration = {
+      method: "get",
+      url: `${API_URL}/auth`,
+      headers: { access_token: accessToken },
+    };
+    if (accessToken !== "") {
+      axios(configuration)
+        .then((_) => {})
+        .catch((error) => {
+          console.log(error.code);
+          switch (error.code) {
+            case "ERR_NETWORK":
+              console.log(error.message);
+              break;
+            case "ERR_BAD_REQUEST":
+              const res = error?.response;
+              switch (res.status) {
+                case 403:
+                  const token = refreshAccessToken(setAccessToken);
+                  if (token) {
+                    setAccessToken(token);
+                  } else {
+                    console.log(error.message);
+                    console.log(res.statusText);
+                  }
+                  break;
+                default:
+                  setAccessToken("");
+                  cookies.remove("access_token");
+                  // cookies.remove("user");
+                  console.log(error.message);
+                  console.log(res.statusText);
+                  break;
+              }
+              break;
+            default:
+              console.log(error);
+              break;
+          }
+        });
+    } else if (refreshToken !== "") {
+      const token = refreshAccessToken(setAccessToken);
+      if (token) {
+        setAccessToken(token);
+      }
+    }
+  }, [accessToken, refreshToken]);
 
   // update local storage when theme changes
   useMemo(() => {
@@ -85,7 +100,7 @@ function App() {
     }
   }, []);
 
-  const t = { token, setToken };
+  const t = { token: accessToken, setToken: setAccessToken };
 
   return (
     <div className={darkMode ? "dark" : ""}>
@@ -104,7 +119,7 @@ function App() {
             <Route
               path="/signin"
               element={
-                token === "" ? (
+                accessToken === "" ? (
                   <SignIn loggedIn={t} />
                 ) : (
                   redirectTo("Already Logged In", "/")
@@ -116,7 +131,7 @@ function App() {
             <Route
               path="/todos"
               element={
-                token === "" ? (
+                accessToken === "" ? (
                   redirectTo("You need to Login First")
                 ) : (
                   <Todos loggedIn={t} />

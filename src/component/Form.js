@@ -6,8 +6,8 @@ const Form = ({
   info,
   msg,
   setMsg,
-  username,
-  setUsername,
+  email,
+  setEmail,
   password,
   setPassword,
   handleSubmit,
@@ -21,14 +21,14 @@ const Form = ({
         <form className="mt-6">
           <div className="mb-2">
             <label type="text" className="block text-sm font-semibold ">
-              Username
+              Email
             </label>
             <input
-              type="text"
+              type="email"
               className="block w-full dark:text-gray-700 px-4 py-2 mt-2 bg-white border rounded-md focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
             />
           </div>
           <div className="mb-2">

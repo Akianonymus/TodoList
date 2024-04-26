@@ -5,7 +5,7 @@ const cookies = new Cookies();
 
 const LogOut = ({ loggedIn }) => {
   const cookieOpt = { path: "/", sameSite: "strict" };
-  cookies.remove("token", cookieOpt);
+  cookies.remove("access_token");
   cookies.remove("user", cookieOpt);
 
   loggedIn.setToken("");

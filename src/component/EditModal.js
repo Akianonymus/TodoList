@@ -34,13 +34,13 @@ const EditModal = ({
                     editTask();
                   }}
                 >
-                  <input
+                  <textarea
                     type="text"
                     placeholder="Add your new todo"
                     className="rounded-md w-full text-center bg-gray-300 dark:bg-gray-800 py-4 border dark:border-gray-200 border-gray-500 "
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                  ></input>
+                  />
                 </form>
               </div>
             </div>

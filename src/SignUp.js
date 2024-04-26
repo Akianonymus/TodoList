@@ -1,16 +1,13 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
 
-import API_URL from "./utils.js";
+import { API_URL } from "./utils";
 import Form from "./component/Form";
 
-const cookies = new Cookies();
-
-const SignUp = ({ loggedIn }) => {
+const SignUp = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
   const [spinner, setSpinner] = useState(false);
@@ -20,61 +17,40 @@ const SignUp = ({ loggedIn }) => {
     // prevent the form from refreshing the whole page
     e.preventDefault();
 
-    if (username === "") {
-      setMsg(`Username blank`);
+    if (email === "") {
+      setMsg(`Email blank`);
       return;
     }
 
     if (password === "") {
       setMsg(`Password blank`);
       return;
+    } else if (password.length < 6) {
+      setMsg(`Password less than 6 characters`);
+      return;
     }
 
     const configuration = {
       method: "post",
-      url: `${API_URL}/signup`,
-      data: { username, password },
-    };
-
-    const cookieOpt = {
-      path: "/",
-      secure: true,
-      sameSite: "Strict",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      url: `${API_URL}/auth/register`,
+      data: { email: email, password },
     };
 
     setMsg("Trying to Sign Up..");
     setSpinner(true);
     axios(configuration)
       .then((result) => {
-        // set the cookie
-        cookies.set("token", result.data.token, cookieOpt);
-        cookies.set("user", username, cookieOpt);
-
-        loggedIn.setToken(result.data.token);
         setSpinner(false);
 
-        navigate("/", {
+        navigate("/signin", {
           replace: true,
-          state: {
-            message:
-              "Sign Up was successful. Welcome " + username.toUpperCase(),
-          },
+          state: { message: "Sign Up was successful." },
         });
       })
       .catch((error) => {
         setSpinner(false);
-
-        const res = error.response;
-        switch (res.status) {
-          case 409:
-            setMsg("Username " + username + " already exists.");
-            break;
-          default:
-            setMsg("SignUp Failed");
-            console.log(error.response);
-            break;
-        }
+        setMsg("SignUp Failed");
+        console.log(error.response);
       });
   };
 
@@ -89,8 +65,8 @@ const SignUp = ({ loggedIn }) => {
       }}
       msg={msg}
       setMsg={setMsg}
-      username={username}
-      setUsername={setUsername}
+      email={email}
+      setEmail={setEmail}
       password={password}
       setPassword={setPassword}
       handleSubmit={handleSubmit}
