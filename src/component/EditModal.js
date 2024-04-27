@@ -3,7 +3,7 @@ const EditModal = ({
   setEditid,
   editContent,
   setEditContent,
-  editTask,
+  editTodo,
 }) => {
   if (editid === "") return <></>;
 
@@ -31,7 +31,7 @@ const EditModal = ({
                   onSubmit={(e) => {
                     e.preventDefault();
                     setEditid("");
-                    editTask();
+                    editTodo();
                   }}
                 >
                   <textarea
@@ -58,7 +58,7 @@ const EditModal = ({
                 type="button"
                 onClick={() => {
                   setEditid("");
-                  editTask();
+                  editTodo();
                 }}
               >
                 Save Changes

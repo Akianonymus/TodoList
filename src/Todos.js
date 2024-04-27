@@ -179,6 +179,7 @@ const Todos = ({ loggedIn }) => {
           dat.set(id, {
             date: dat.get(id).date,
             content: editContent,
+            status: dat.get(id).status,
           });
           setData(dat);
         }
@@ -187,6 +188,7 @@ const Todos = ({ loggedIn }) => {
           dat.set(id, {
             date: dat.get(id).date,
             content: editContent,
+            status: dat.get(id).status,
           });
           setNewdata(dat);
         }

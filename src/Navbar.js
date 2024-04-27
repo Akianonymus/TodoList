@@ -11,13 +11,14 @@ import {
 import { useState } from "react";
 
 const NavItem = ({ path, content, onClick, icon }) => {
+  const classes = " flex items-center rounded-md px-2 py-2  ";
   const active =
-    " bg-blue-600  dark:bg-blue-900 hover:bg-blue-500 dark:hover:bg-blue-700 ";
-  const classes =
-    "flex items-center rounded-md px-2 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600";
+    " text-white bg-blue-600 dark:bg-blue-900 hover:bg-blue-500 dark:hover:bg-blue-700 ";
+  const inactive =
+    " bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 ";
   return (
     <NavLink
-      className={({ isActive }) => classes + (isActive ? active : "")}
+      className={({ isActive }) => classes + (isActive ? active : inactive)}
       to={path}
       onClick={onClick}
     >
