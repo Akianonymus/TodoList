@@ -6,6 +6,8 @@ const Form = ({
   info,
   msg,
   setMsg,
+  name,
+  setName,
   email,
   setEmail,
   password,
@@ -13,12 +15,31 @@ const Form = ({
   handleSubmit,
   spinner,
 }) => {
+  let nameComponent = "";
+  if (info.blink.includes("signin")) {
+    nameComponent = (
+      <div className="mb-2">
+        <label type="text" className="block text-sm font-semibold ">
+          Name
+        </label>
+        <input
+          type="text"
+          className="block w-full dark:text-gray-700 px-4 py-2 mt-2 bg-white border rounded-md focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter your name"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col flex-wrap justify-center min-h-[90vh]">
       <Message msg={msg} setMsg={setMsg} spinner={spinner} classes="mb-2" />
       <div className="bg-gray-200 dark:bg-gray-800 self-center sm:w-[66%] lg:w-[40%] w-[90%] p-4 rounded-md shadow-md">
         <h1 className="text-3xl font-semibold text-center ">{info.header}</h1>
         <form className="mt-6">
+          {nameComponent}
           <div className="mb-2">
             <label type="text" className="block text-sm font-semibold ">
               Email

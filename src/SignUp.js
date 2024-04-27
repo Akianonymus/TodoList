@@ -7,6 +7,7 @@ import Form from "./component/Form";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
@@ -16,6 +17,11 @@ const SignUp = () => {
     setMsg("");
     // prevent the form from refreshing the whole page
     e.preventDefault();
+
+    if (name === "") {
+      setMsg(`Name blank`);
+      return;
+    }
 
     if (email === "") {
       setMsg(`Email blank`);
@@ -33,7 +39,7 @@ const SignUp = () => {
     const configuration = {
       method: "post",
       url: `${API_URL}/auth/register`,
-      data: { email: email, password },
+      data: { name: name, email: email, password },
     };
 
     setMsg("Trying to Sign Up..");
@@ -44,7 +50,10 @@ const SignUp = () => {
 
         navigate("/signin", {
           replace: true,
-          state: { message: "Sign Up was successful." },
+          state: {
+            message:
+              "Sign Up was successful. Now you can login using those credentials",
+          },
         });
       })
       .catch((error) => {
@@ -65,6 +74,8 @@ const SignUp = () => {
       }}
       msg={msg}
       setMsg={setMsg}
+      name={name}
+      setName={setName}
       email={email}
       setEmail={setEmail}
       password={password}

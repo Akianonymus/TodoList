@@ -66,9 +66,11 @@ const SignIn = ({ loggedIn }) => {
         // set the cookie
         const token = result.data.data.accessToken;
         const refreshToken = result.data.data.refreshToken;
+        const name = result.data.data.name;
         cookies.set("access_token", token, cookieOpt);
         cookies.set("refresh_token", refreshToken, cookieOpt);
-        cookies.set("user", email, cookieOpt);
+        cookies.set("email", email, cookieOpt);
+        cookies.set("name", name, cookieOpt);
 
         loggedIn.setToken(token);
 
@@ -77,7 +79,7 @@ const SignIn = ({ loggedIn }) => {
 
         navigate("/", {
           replace: true,
-          state: { message: "Welcome " + email.toUpperCase() },
+          state: { message: "Welcome " + name.toUpperCase() },
         });
       })
       .catch((error) => {

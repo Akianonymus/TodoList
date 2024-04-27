@@ -1,17 +1,24 @@
-import { Navigate } from "react-router";
+import { useEffect } from "react";
 import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 const cookies = new Cookies();
 
 const LogOut = ({ loggedIn }) => {
+  const navigate = useNavigate();
   const cookieOpt = { path: "/", sameSite: "strict" };
-  cookies.remove("access_token");
-  cookies.remove("user", cookieOpt);
+  cookies.remove("access_token", cookieOpt);
+  cookies.remove("refresh_token", cookieOpt);
+  cookies.remove("email", cookieOpt);
+  cookies.remove("name", cookieOpt);
 
-  loggedIn.setToken("");
-  return (
-    <Navigate to="/" replace={true} state={{ message: "Log Out Successful" }} />
-  );
+  useEffect(() => {
+    loggedIn?.setToken("");
+    navigate("/signin", {
+      replace: true,
+      state: { message: "Log Out Successful" },
+    });
+  }, [loggedIn, navigate]);
 };
 
 export default LogOut;
