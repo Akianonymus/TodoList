@@ -119,7 +119,7 @@ const Todo = async (todo, success, error, cleanup, method = "post") => {
   cleanup();
 };
 
-const Todos = ({ loggedIn }) => {
+const Notes = ({ loggedIn }) => {
   const [data, setData] = useState(new Map());
   const [newdata, setNewdata] = useState(new Map());
   const [contentFilter, setContentFilter] = useState("");
@@ -312,9 +312,9 @@ const Todos = ({ loggedIn }) => {
     todo.DeleteAll();
   };
 
-  const TodoLayout = ({ todos }) => {
+  const TodoLayout = ({ notes }) => {
     const a = [];
-    todos?.forEach((value, key) => {
+    notes?.forEach((value, key) => {
       const dateObj = new Date(value?.date);
       const date = `${dateObj.getDate()}/${dateObj.getMonth()}/${dateObj.getFullYear()}`;
       const renderStatusDropdown = (status, todoId) => {
@@ -395,7 +395,7 @@ const Todos = ({ loggedIn }) => {
   };
 
   useMemo(() => {
-    async function fetchTodos() {
+    async function fetchNotes() {
       if (loggedIn?.token === "") return;
 
       const configuration = {
@@ -404,7 +404,7 @@ const Todos = ({ loggedIn }) => {
         headers: { access_token: loggedIn.token },
       };
 
-      setMsg("Fetching todos from server");
+      setMsg("Fetching notes from server");
       setSpinner(true);
 
       let done = false;
@@ -415,7 +415,7 @@ const Todos = ({ loggedIn }) => {
           let dat = new Map();
           // modify the result array to a Map for easy insertion, deletion
           // reverse so new items are shown first
-          result.data?.data?.todos?.forEach((todo) => {
+          result.data?.data?.notes?.forEach((todo) => {
             const [id, content, date, status] = [
               todo._id,
               todo.content,
@@ -432,17 +432,17 @@ const Todos = ({ loggedIn }) => {
           setData(dat);
         })
         .catch((error) => {
-          console.log("Error: Cannot fetch todos " + error.message);
+          console.log("Error: Cannot fetch notes " + error.message);
           // loggedIn.setToken("");
           tmpmsg = error.toJSON().message;
           return;
         });
 
-      done ? setMsg("") : setMsg("Couldn't fetch todos. " + tmpmsg);
+      done ? setMsg("") : setMsg("Couldn't fetch notes. " + tmpmsg);
       setSpinner(false);
     }
 
-    fetchTodos();
+    fetchNotes();
   }, [loggedIn?.token]);
 
   if (loggedIn?.token === "") return signIn;
@@ -535,9 +535,9 @@ const Todos = ({ loggedIn }) => {
 
       <div className="mt-4 flex flex-wrap justify-center ">
         <TodoLayout
-          todos={filterInData(newdata, contentFilter, statusFilter)}
+          notes={filterInData(newdata, contentFilter, statusFilter)}
         />
-        <TodoLayout todos={filterInData(data, contentFilter, statusFilter)} />
+        <TodoLayout notes={filterInData(data, contentFilter, statusFilter)} />
       </div>
 
       {data?.size !== 0 || newdata?.size !== 0 ? (
@@ -557,7 +557,7 @@ const Todos = ({ loggedIn }) => {
         <div className="sticky bottom-0 text-center">
           <div className="flex flex-row justify-center items-center ">
             <div className="bg-gray-200 dark:bg-gray-800  sm:w-[66%] lg:w-[40%] w-[90%] p-5 px-10 rounded-md shadow-lg tracking-widest">
-              No Todos
+              No Notes
             </div>
           </div>
         </div>
@@ -566,4 +566,4 @@ const Todos = ({ loggedIn }) => {
   );
 };
 
-export default Todos;
+export default Notes;

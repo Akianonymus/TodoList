@@ -1,1 +1,1 @@
-# TodoList App FrontEnd
+# Simple Notes App FrontEnd

@@ -5,7 +5,7 @@ import Cookies from "universal-cookie";
 
 import Home from "./Home";
 import Navbar from "./Navbar";
-import Todos from "./Todos";
+import Notes from "./Notes";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import LogOut from "./Logout";
@@ -129,12 +129,12 @@ function App() {
             <Route path="/signup" element={<SignUp loggedIn={t} />} />
             <Route path="/logout" element={<LogOut loggedIn={t} />} />
             <Route
-              path="/todos"
+              path="/notes"
               element={
                 accessToken === "" ? (
                   redirectTo("You need to Login First")
                 ) : (
-                  <Todos loggedIn={t} />
+                  <Notes loggedIn={t} />
                 )
               }
             />

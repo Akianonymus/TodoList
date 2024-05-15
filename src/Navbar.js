@@ -33,9 +33,9 @@ const Nav = ({ loggedIn, setMenu, darkMode, setDarkMode }) => {
     <>
       {loggedIn.token === "" || (
         <NavItem
-          title="Open all saved Todos"
-          path="/todos"
-          content="Todos"
+          title="Open all saved Notes"
+          path="/notes"
+          content="Notes"
           onClick={() => setMenu && setMenu(false)}
           icon={<TbListDetails className="mr-1" />}
         />
@@ -86,7 +86,7 @@ const Navbar = ({ loggedIn, darkMode, setDarkMode }) => {
       <div className="bg-gray-200 dark:bg-gray-800 ml-5 lg:ml-8 flex flex-row items-center text-2xl rounded-md px-3 py-2">
         <NavLink to="/" className="flex flex-row items-center">
           <TbNotes className="mr-1" />
-          TodoList
+          Simple Notes
         </NavLink>
       </div>
 
